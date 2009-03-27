@@ -62,5 +62,8 @@ class DotsWindow(pyglet.window.Window):
 
     def save_image(self):
         image_path = os.path.join(dir_path, 'image.png')
-        color_buffer = pyglet.image.get_buffer_manager().get_color_buffer()
-        color_buffer.save(image_path)
+        buffer_manager = pyglet.image.get_buffer_manager()
+        color_buffer = buffer_manager.get_color_buffer()
+        image_data = color_buffer.image_data
+        image_data.format = 'RGB'
+        image_data.save(image_path)
