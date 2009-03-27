@@ -57,4 +57,10 @@ class DotsWindow(pyglet.window.Window):
 
     def on_key_press(self, symbol, modifiers):
         if symbol == pyglet.window.key.ESCAPE:
+            self.save_image()
             self.close()
+
+    def save_image(self):
+        image_path = os.path.join(dir_path, 'image.png')
+        color_buffer = pyglet.image.get_buffer_manager().get_color_buffer()
+        color_buffer.texture.save(image_path)
