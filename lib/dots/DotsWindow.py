@@ -1,4 +1,5 @@
 import os, pyglet, random, sys
+import PIL.Image
 from pyglet.gl import *
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -57,13 +58,18 @@ class DotsWindow(pyglet.window.Window):
 
     def on_key_press(self, symbol, modifiers):
         if symbol == pyglet.window.key.ESCAPE:
-            self.save_image()
+            image = self.get_pil_image()
+            image = image.convert('RGB')
+            image.save('dots.png')
             self.close()
 
-    def save_image(self):
-        image_path = os.path.join(dir_path, 'image.png')
+    def get_pil_image(self):
         buffer_manager = pyglet.image.get_buffer_manager()
         color_buffer = buffer_manager.get_color_buffer()
         image_data = color_buffer.image_data
-        image_data.format = 'RGB'
-        image_data.save(image_path)
+        pil_image = PIL.Image.frombuffer(image_data.format,
+                                         (image_data.width, image_data.height),
+                                         image_data.data, 'raw',
+                                         image_data.format, 0, 1)
+        pil_image = pil_image.transpose(PIL.Image.FLIP_TOP_BOTTOM)
+        return pil_image
