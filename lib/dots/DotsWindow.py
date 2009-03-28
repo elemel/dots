@@ -1,13 +1,14 @@
 import os, pyglet, random, sys
-import PIL.Image
+import PIL.Image, PIL.ImageChops, PIL.ImageStat
 from pyglet.gl import *
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
 class DotsWindow(pyglet.window.Window):
-    def __init__(self):
+    def __init__(self, goal):
         pyglet.window.Window.__init__(self, width=256, height=256,
                                       caption='Dots')
+        self.goal = goal
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         dot_path = os.path.join(dir_path, 'dot.png')
@@ -23,6 +24,10 @@ class DotsWindow(pyglet.window.Window):
                  self.height ** 2 / self.dot_texture.height, 1)
         for dot in self.dots:
             self.draw_dot(dot)
+        screenshot = self.get_screenshot()
+        diff = PIL.ImageChops.difference(screenshot, self.goal)
+        stat = PIL.ImageStat.Stat(diff)
+        print stat.rms
 
     def generate_dot(self):
         r = random.random
@@ -59,11 +64,10 @@ class DotsWindow(pyglet.window.Window):
     def on_key_press(self, symbol, modifiers):
         if symbol == pyglet.window.key.ESCAPE:
             image = self.get_pil_image()
-            image = image.convert('RGB')
             image.save('dots.png')
             self.close()
 
-    def get_pil_image(self):
+    def get_screenshot(self):
         buffer_manager = pyglet.image.get_buffer_manager()
         color_buffer = buffer_manager.get_color_buffer()
         image_data = color_buffer.image_data
@@ -71,5 +75,6 @@ class DotsWindow(pyglet.window.Window):
                                          (image_data.width, image_data.height),
                                          image_data.data, 'raw',
                                          image_data.format, 0, 1)
+        pil_image = pil_image.convert('RGB')
         pil_image = pil_image.transpose(PIL.Image.FLIP_TOP_BOTTOM)
         return pil_image
