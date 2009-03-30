@@ -62,7 +62,7 @@ class DotsWindow(pyglet.window.Window):
         glPushMatrix()
         glTranslated(x, y, 0)
         glScaled(radius, radius, 1)
-        glColor4d(red, green, blue, alpha)
+        glColor4d(red, green, blue, alpha / 2)
         glEnable(self.dot_texture.target)
         glBindTexture(self.dot_texture.target, self.dot_texture.id)
         glBegin(GL_QUADS)
