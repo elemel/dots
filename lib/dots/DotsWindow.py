@@ -16,9 +16,7 @@ class DotsWindow(pyglet.window.Window):
         self.goal = PIL.Image.open(goal_path).convert('RGB')
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        dot_path = os.path.join(dir_path, 'dot.png')
-        dot_image = pyglet.image.load(dot_path)
-        self.dot_texture = dot_image.get_texture()
+        self.dot_textures = self.load_dot_textures()
         self.dots_path = '%s.dots' % os.path.splitext(self.goal_path)[0]
         try:
             dots_file = open(self.dots_path)
@@ -34,6 +32,15 @@ class DotsWindow(pyglet.window.Window):
         self.best_fitness = None
         self.best_dots = self.dots
         pyglet.clock.schedule_interval_soft(self.step, 0.001)
+
+    def load_dot_textures(self):
+        dot_textures = []
+        for i in xrange(16):
+            dot_path = os.path.join(dir_path, 'dot-%d.png' % i)
+            dot_image = pyglet.image.load(dot_path)
+            dot_texture = dot_image.get_texture()
+            dot_textures.append(dot_texture)
+        return dot_textures
 
     def step(self, dt):
         if self.screenshot is not None:
@@ -51,20 +58,21 @@ class DotsWindow(pyglet.window.Window):
         glClearColor(0, 0, 0, 0)
         self.clear()
         glLoadIdentity()
-        glScaled(self.width ** 2 / self.dot_texture.width,
-                 self.height ** 2 / self.dot_texture.height, 1)
+        glScaled(self.width ** 2 / self.dot_textures[0].width,
+                 self.height ** 2 / self.dot_textures[0].height, 1)
         for dot in self.dots:
             self.draw_dot(dot)
         self.screenshot = self.get_screenshot()
 
     def draw_dot(self, dot):
-        x, y, radius, red, green, blue, alpha = dot
+        x, y, radius, blur, red, green, blue, alpha = dot
+        i = min(int(blur * 16), 15)
         glPushMatrix()
         glTranslated(x, y, 0)
         glScaled(radius, radius, 1)
         glColor4d(red, green, blue, alpha / 2)
-        glEnable(self.dot_texture.target)
-        glBindTexture(self.dot_texture.target, self.dot_texture.id)
+        glEnable(self.dot_textures[i].target)
+        glBindTexture(self.dot_textures[i].target, self.dot_textures[i].id)
         glBegin(GL_QUADS)
         glTexCoord2d(0, 0)
         glVertex2d(-0.5, -0.5)
@@ -75,7 +83,7 @@ class DotsWindow(pyglet.window.Window):
         glTexCoord2d(1, 0)
         glVertex2d(0.5, -0.5)
         glEnd()
-        glDisable(self.dot_texture.target)
+        glDisable(self.dot_textures[i].target)
         glPopMatrix()
 
     def generate_dots(self):
@@ -113,7 +121,7 @@ class DotsWindow(pyglet.window.Window):
         return tuple(dots)
 
     def generate_dot(self):
-        return tuple(random.random() for _ in xrange(7))
+        return tuple(random.random() for _ in xrange(8))
 
     def on_close(self):
         self.close()
