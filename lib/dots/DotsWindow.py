@@ -30,6 +30,7 @@ class DotsWindow(pyglet.window.Window):
         self.fitness = None
         self.best_fitness = None
         self.best_dots = self.dots
+        self.display_lists = {}
         pyglet.clock.schedule_interval_soft(self.step, 0.001)
 
     def load_dot_texture(self):
@@ -56,7 +57,13 @@ class DotsWindow(pyglet.window.Window):
         glScaled(self.width ** 2 / self.dot_texture.width,
                  self.height ** 2 / self.dot_texture.height, 1)
         for dot in self.dots:
-            self.draw_dot(dot)
+            if dot in self.display_lists:
+                glCallList(self.display_lists[dot])
+            else:
+                self.display_lists[dot] = glGenLists(1)
+                glNewList(self.display_lists[dot], GL_COMPILE_AND_EXECUTE)
+                self.draw_dot(dot)
+                glEndList()
         self.screenshot = self.get_screenshot()
 
     def draw_dot(self, dot):
@@ -93,7 +100,10 @@ class DotsWindow(pyglet.window.Window):
     def mutate_dots(self, dots):
         mutation = random.choice([self.move_dot, self.replace_dot,
                                   self.mutate_dot])
-        return mutation(dots)
+        dots = mutation(dots)
+        for dot in set(self.display_lists).difference(dots):
+            glDeleteLists(self.display_lists.pop(dot), 1)
+        return dots
 
     def move_dot(self, dots):
         dots = list(dots)
