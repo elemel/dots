@@ -98,27 +98,20 @@ class DotsWindow(pyglet.window.Window):
         return x, y, radius, red, green, blue, alpha
 
     def mutate_dots(self, dots):
-        mutation = random.choice([self.move_dot, self.replace_dot,
-                                  self.mutate_dot])
+        mutation = random.choice([self.move_or_replace_dot, self.mutate_dot])
         dots = mutation(dots)
         for dot in set(self.display_lists).difference(dots):
             glDeleteLists(self.display_lists.pop(dot), 1)
         return dots
 
-    def move_dot(self, dots):
+    def move_or_replace_dot(self, dots):
         dots = list(dots)
         i = random.randrange(len(dots))
         j = random.randrange(len(dots))
         dot = dots.pop(i)
+        if random.randrange(2):
+            dot = self.generate_dot()
         dots.insert(j, dot)
-        return tuple(dots)
-
-    def replace_dot(self, dots):
-        dots = list(dots)
-        i = random.randrange(len(dots))
-        j = random.randrange(len(dots))
-        dots.pop(i)
-        dots.insert(j, self.generate_dot())
         return tuple(dots)
 
     def mutate_dot(self, dots):
