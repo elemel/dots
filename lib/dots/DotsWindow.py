@@ -45,8 +45,8 @@ class DotsWindow(pyglet.window.Window):
                 self.best_dots_image = self.dots_image
                 self.best_fitness = self.fitness
                 print "Fitness: %.9f" % self.best_fitness
-            for dot in set(self.display_lists).difference(self.best_dots_image.dots):
-                glDeleteLists(self.display_lists.pop(dot), 1)
+            for element in set(self.display_lists).difference(self.best_dots_image.elements):
+                glDeleteLists(self.display_lists.pop(element), 1)
             self.dots_image = self.best_dots_image.mutate(Dot.generate, random)
 
     def on_draw(self):
@@ -54,13 +54,13 @@ class DotsWindow(pyglet.window.Window):
         self.clear()
         glLoadIdentity()
         glScaled(self.width, self.height, 1)
-        for dot in self.dots_image.dots:
-            if dot in self.display_lists:
-                glCallList(self.display_lists[dot])
+        for element in self.dots_image.elements:
+            if element in self.display_lists:
+                glCallList(self.display_lists[element])
             else:
-                self.display_lists[dot] = glGenLists(1)
-                glNewList(self.display_lists[dot], GL_COMPILE_AND_EXECUTE)
-                self.draw_dot(dot)
+                self.display_lists[element] = glGenLists(1)
+                glNewList(self.display_lists[element], GL_COMPILE_AND_EXECUTE)
+                self.draw_dot(element)
                 glEndList()
         self.screenshot = self.get_screenshot()
 
