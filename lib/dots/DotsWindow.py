@@ -4,6 +4,7 @@ import os, pyglet, random, sys
 import cPickle as pickle
 import PIL.Image, PIL.ImageChops, PIL.ImageStat
 from pyglet.gl import *
+from dots.Dot import Dot
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -67,11 +68,10 @@ class DotsWindow(pyglet.window.Window):
         self.screenshot = self.get_screenshot()
 
     def draw_dot(self, dot):
-        x, y, radius, red, green, blue, alpha = dot
         glPushMatrix()
-        glTranslated(x, y, 0)
-        glScaled(radius, radius, 1)
-        glColor4d(red, green, blue, alpha / 2)
+        glTranslated(dot.x, dot.y, 0)
+        glScaled(dot.radius, dot.radius, 1)
+        glColor4d(dot.red, dot.green, dot.blue, dot.alpha / 2)
         glEnable(self.dot_texture.target)
         glBindTexture(self.dot_texture.target, self.dot_texture.id)
         glBegin(GL_QUADS)
@@ -88,14 +88,7 @@ class DotsWindow(pyglet.window.Window):
         glPopMatrix()
 
     def generate_dots(self):
-        return tuple(self.generate_dot() for _ in xrange(256))
-
-    def generate_dot(self):
-        x, y = random.random(), random.random()
-        radius = random.random() ** 3
-        red, green, blue = random.random(), random.random(), random.random()
-        alpha = random.random()
-        return x, y, radius, red, green, blue, alpha
+        return tuple(Dot.generate(random) for _ in xrange(256))
 
     def mutate_dots(self, dots):
         mutation = random.choice([self.move_or_replace_dot, self.mutate_dot])
@@ -110,18 +103,14 @@ class DotsWindow(pyglet.window.Window):
         j = random.randrange(len(dots))
         dot = dots.pop(i)
         if random.randrange(2):
-            dot = self.generate_dot()
+            dot = Dot.generate(random)
         dots.insert(j, dot)
         return tuple(dots)
 
     def mutate_dot(self, dots):
         dots = list(dots)
         i = random.randrange(len(dots))
-        dot = list(dots[i])
-        j = random.randrange(len(dot))
-        dot[j] += random.choice([-1, 1]) * random.random() ** 3
-        dot[j] = max(0, min(dot[j], 1))
-        dots[i] = tuple(dot)
+        dots[i] = dots[i].mutate(random)
         return tuple(dots)
 
     def on_close(self):
