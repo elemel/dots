@@ -1,4 +1,3 @@
-import cPickle as pickle
 from dots.Dot import Dot
 
 class DotsImage(object):
@@ -28,18 +27,3 @@ class DotsImage(object):
         i = random.randrange(len(dots))
         dots[i] = dots[i].mutate(random)
         return DotsImage(dots)
-
-    @staticmethod
-    def load(path):
-        file_obj = open(path)
-        try:
-            return pickle.load(file_obj)
-        finally:
-            file_obj.close()
-
-    def save(self, path):
-        file_obj = open(path, 'w')
-        try:
-            pickle.dump(self, file_obj, pickle.HIGHEST_PROTOCOL)
-        finally:
-            file_obj.close()

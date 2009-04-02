@@ -5,6 +5,7 @@ import PIL.Image, PIL.ImageChops, PIL.ImageStat
 from pyglet.gl import *
 from dots.Dot import Dot
 from dots.DotsImage import DotsImage
+from dots.io import load, save
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,7 +21,7 @@ class DotsWindow(pyglet.window.Window):
         self.dot_texture = self.load_dot_texture()
         self.dots_image_path = '%s.dots' % os.path.splitext(self.goal_path)[0]
         try:
-            self.dots_image = DotsImage.load(self.dots_image_path)
+            self.dots_image = load(self.dots_image_path)
         except Exception, e:
             self.dots_image = DotsImage.generate(256, random)
         self.screenshot = None
@@ -84,7 +85,7 @@ class DotsWindow(pyglet.window.Window):
         glPopMatrix()
 
     def on_close(self):
-        self.best_dots_image.save(self.dots_image_path)
+        save(self.best_dots_image, self.dots_image_path)
         self.save_screenshot()
         self.close()
 
