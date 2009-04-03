@@ -11,17 +11,18 @@ from dots.io import load, save
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
 class DotsWindow(pyglet.window.Window):
-    def __init__(self, goal_path):
-        caption = 'Dots: %s' % os.path.split(goal_path)[1]
+    def __init__(self, goal_image_path):
+        caption = 'Dots: %s' % os.path.split(goal_image_path)[1]
         pyglet.window.Window.__init__(self, width=256, height=256,
                                       caption=caption)
-        self.goal_path = goal_path
-        self.goal = PIL.Image.open(goal_path).convert('RGB')
+        self.goal_image_path = goal_image_path
+        self.goal_image = PIL.Image.open(goal_image_path).convert('RGB')
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         circle_texture = self.load_circle_texture()
         self.graphics = Graphics(circle_texture)
-        self.dots_image_path = '%s.dots' % os.path.splitext(self.goal_path)[0]
+        self.dots_image_path = ('%s.dots' %
+                                os.path.splitext(self.goal_image_path)[0])
         try:
             self.dots_image = load(self.dots_image_path)
         except Exception, e:
@@ -40,7 +41,7 @@ class DotsWindow(pyglet.window.Window):
 
     def step(self, dt):
         if self.screenshot is not None:
-            diff = PIL.ImageChops.difference(self.screenshot, self.goal)
+            diff = PIL.ImageChops.difference(self.screenshot, self.goal_image)
             stat = PIL.ImageStat.Stat(diff)
             self.fitness = sum(stat.rms) / len(stat.rms) / 256
             if self.best_fitness is None or self.fitness < self.best_fitness:
