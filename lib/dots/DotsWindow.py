@@ -5,6 +5,7 @@ import PIL.Image, PIL.ImageChops, PIL.ImageStat
 from pyglet.gl import *
 from dots.Dot import Dot
 from dots.DotsImage import DotsImage
+from dots.Graphics import Graphics
 from dots.io import load, save
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -18,7 +19,8 @@ class DotsWindow(pyglet.window.Window):
         self.goal = PIL.Image.open(goal_path).convert('RGB')
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        self.dot_texture = self.load_dot_texture()
+        circle_texture = self.load_circle_texture()
+        self.graphics = Graphics(circle_texture)
         self.dots_image_path = '%s.dots' % os.path.splitext(self.goal_path)[0]
         try:
             self.dots_image = load(self.dots_image_path)
@@ -31,10 +33,10 @@ class DotsWindow(pyglet.window.Window):
         self.display_lists = {}
         pyglet.clock.schedule_interval_soft(self.step, 0.001)
 
-    def load_dot_texture(self):
-        dot_path = os.path.join(dir_path, 'dot.png')
-        dot_image = pyglet.image.load(dot_path)
-        return dot_image.get_texture()
+    def load_circle_texture(self):
+        circle_path = os.path.join(dir_path, 'circle.png')
+        circle_image = pyglet.image.load(circle_path)
+        return circle_image.get_texture()
 
     def step(self, dt):
         if self.screenshot is not None:
@@ -64,29 +66,9 @@ class DotsWindow(pyglet.window.Window):
             else:
                 self.display_lists[element] = glGenLists(1)
                 glNewList(self.display_lists[element], GL_COMPILE_AND_EXECUTE)
-                self.draw_dot(element)
+                element.draw(self.graphics)
                 glEndList()
         self.screenshot = self.get_screenshot()
-
-    def draw_dot(self, dot):
-        glPushMatrix()
-        glTranslated(dot.x, dot.y, 0)
-        glScaled(dot.radius, dot.radius, 1)
-        glColor4d(dot.red, dot.green, dot.blue, dot.alpha / 2)
-        glEnable(self.dot_texture.target)
-        glBindTexture(self.dot_texture.target, self.dot_texture.id)
-        glBegin(GL_QUADS)
-        glTexCoord2d(0, 0)
-        glVertex2d(-0.5, -0.5)
-        glTexCoord2d(0, 1)
-        glVertex2d(-0.5, 0.5)
-        glTexCoord2d(1, 1)
-        glVertex2d(0.5, 0.5)
-        glTexCoord2d(1, 0)
-        glVertex2d(0.5, -0.5)
-        glEnd()
-        glDisable(self.dot_texture.target)
-        glPopMatrix()
 
     def on_close(self):
         save(self.best_dots_image, self.dots_image_path)
