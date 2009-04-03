@@ -1,4 +1,4 @@
-class Dot(object):
+class Circle(object):
     def __init__(self, x, y, radius, red, green, blue, alpha):
         self.x = x
         self.y = y
@@ -14,7 +14,7 @@ class Dot(object):
         radius = random.random() ** 3
         red, green, blue = random.random(), random.random(), random.random()
         alpha = random.random()
-        return Dot(x, y, radius, red, green, blue, alpha)
+        return Circle(x, y, radius, red, green, blue, alpha)
 
     def mutate(self, random):
         values = [self.x, self.y, self.radius,
@@ -22,7 +22,7 @@ class Dot(object):
         i = random.randrange(len(values))
         values[i] += random.choice([-1, 1]) * random.random() ** 3
         values[i] = max(0, min(values[i], 1))
-        return Dot(*values)
+        return Circle(*values)
 
     def draw(self, graphics):
         graphics.draw_circle(self.x, self.y, self.radius,

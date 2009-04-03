@@ -3,7 +3,7 @@ from __future__ import division
 import os, pyglet, random, sys
 import PIL.Image, PIL.ImageChops, PIL.ImageStat
 from pyglet.gl import *
-from dots.Dot import Dot
+from dots.Circle import Circle
 from dots.DotsImage import DotsImage
 from dots.Graphics import Graphics
 from dots.io import load, save
@@ -25,7 +25,7 @@ class DotsWindow(pyglet.window.Window):
         try:
             self.dots_image = load(self.dots_image_path)
         except Exception, e:
-            self.dots_image = DotsImage.generate(256, Dot.generate, random)
+            self.dots_image = DotsImage.generate(256, Circle.generate, random)
         self.screenshot = None
         self.fitness = None
         self.best_fitness = None
@@ -48,7 +48,8 @@ class DotsWindow(pyglet.window.Window):
                 self.best_fitness = self.fitness
                 print "Fitness: %.9f" % self.best_fitness
             self.update_display_lists()
-            self.dots_image = self.best_dots_image.mutate(Dot.generate, random)
+            self.dots_image = self.best_dots_image.mutate(Circle.generate,
+                                                          random)
 
     def update_display_lists(self):
         diff = set(self.display_lists).difference(self.best_dots_image.elements)
