@@ -25,3 +25,13 @@ class Graphics(object):
         glEnd()
         glDisable(self.circle_texture.target)
         glPopMatrix()
+
+    def draw_triangle(self, x1, y1, x2, y2, x3, y3, red, green, blue, alpha):
+        glPushMatrix()
+        glColor4d(red, green, blue, alpha / 2)
+        glBegin(GL_TRIANGLES)
+        glVertex2d(x1, y1)
+        glVertex2d(x2, y2)
+        glVertex2d(x3, y3)
+        glEnd()
+        glPopMatrix()

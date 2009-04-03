@@ -6,6 +6,7 @@ from pyglet.gl import *
 from dots.Circle import Circle
 from dots.DotsImage import DotsImage
 from dots.Graphics import Graphics
+from dots.Triangle import Triangle
 from dots.io import load, save
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -26,7 +27,8 @@ class DotsWindow(pyglet.window.Window):
         try:
             self.dots_image = load(self.dots_image_path)
         except Exception, e:
-            self.dots_image = DotsImage.generate(256, Circle.generate, random)
+            self.dots_image = DotsImage.generate(256, self.generate_element,
+                                                 random)
         self.screenshot = None
         self.fitness = None
         self.best_fitness = None
@@ -39,6 +41,9 @@ class DotsWindow(pyglet.window.Window):
         circle_image = pyglet.image.load(circle_path)
         return circle_image.get_texture()
 
+    def generate_element(self, random):
+        return random.choice([Circle.generate, Triangle.generate])(random)
+
     def step(self, dt):
         if self.screenshot is not None:
             diff = PIL.ImageChops.difference(self.screenshot, self.goal_image)
@@ -49,7 +54,7 @@ class DotsWindow(pyglet.window.Window):
                 self.best_fitness = self.fitness
                 print "Fitness: %.9f" % self.best_fitness
             self.update_display_lists()
-            self.dots_image = self.best_dots_image.mutate(Circle.generate,
+            self.dots_image = self.best_dots_image.mutate(self.generate_element,
                                                           random)
 
     def update_display_lists(self):
