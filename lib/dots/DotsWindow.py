@@ -45,9 +45,13 @@ class DotsWindow(pyglet.window.Window):
                 self.best_dots_image = self.dots_image
                 self.best_fitness = self.fitness
                 print "Fitness: %.9f" % self.best_fitness
-            for element in set(self.display_lists).difference(self.best_dots_image.elements):
-                glDeleteLists(self.display_lists.pop(element), 1)
+            self.update_display_lists()
             self.dots_image = self.best_dots_image.mutate(Dot.generate, random)
+
+    def update_display_lists(self):
+        diff = set(self.display_lists).difference(self.best_dots_image.elements)
+        for element in diff:
+            glDeleteLists(self.display_lists.pop(element), 1)
 
     def on_draw(self):
         glClearColor(0, 0, 0, 0)
