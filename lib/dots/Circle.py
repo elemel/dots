@@ -12,8 +12,7 @@ class Circle(object):
     def generate(random):
         x, y = random.random(), random.random()
         radius = random.random() ** 3
-        red, green, blue = random.random(), random.random(), random.random()
-        alpha = random.random()
+        red, green, blue, alpha = [random.random() for _ in xrange(4)]
         return Circle(x, y, radius, red, green, blue, alpha)
 
     def mutate(self, random):

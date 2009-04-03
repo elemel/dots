@@ -1,3 +1,5 @@
+import math
+
 class Triangle(object):
     def __init__(self, x1, y1, x2, y2, x3, y3, red, green, blue, alpha):
         self.x1 = x1
@@ -13,11 +15,13 @@ class Triangle(object):
 
     @staticmethod
     def generate(random):
-        x1, y1 = random.random(), random.random()
-        x2, y2 = random.random(), random.random()
-        x3, y3 = random.random(), random.random()
-        red, green, blue = random.random(), random.random(), random.random()
-        alpha = random.random()
+        x, y = random.random(), random.random()
+        radius = random.random() ** 3
+        a1, a2, a3 = [2 * math.pi * random.random() for _ in xrange(3)]
+        x1, y1 = x + radius * math.cos(a1), y + radius * math.sin(a1)
+        x2, y2 = x + radius * math.cos(a2), y + radius * math.sin(a2)
+        x3, y3 = x + radius * math.cos(a3), y + radius * math.sin(a3)
+        red, green, blue, alpha = [random.random() for _ in xrange(4)]
         return Triangle(x1, y1, x2, y2, x3, y3, red, green, blue, alpha)
 
     def mutate(self, random):
