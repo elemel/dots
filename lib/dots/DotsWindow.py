@@ -6,6 +6,7 @@ from pyglet.gl import *
 from dots.Circle import Circle
 from dots.DotsImage import DotsImage
 from dots.Graphics import Graphics
+from dots.ShadedCircle import ShadedCircle
 from dots.Triangle import Triangle
 from dots.io import load, save
 
@@ -15,7 +16,6 @@ class DotsWindow(pyglet.window.Window):
     def __init__(self, config):
         self.goal_image_path = config['goal']
         element_factory_name = config.get('element', 'random')
-        print element_factory_name
         self.element_factory = self.get_element_factory(element_factory_name)
         caption = 'Dots: %s' % os.path.split(self.goal_image_path)[1]
         pyglet.window.Window.__init__(self, width=256, height=256,
@@ -45,8 +45,13 @@ class DotsWindow(pyglet.window.Window):
             factory = random.choice([Circle.generate, Triangle.generate])
             return factory(random)
         factories = {
+            'c': Circle.generate,
             'circle': Circle.generate,
+            'x': generate_random_element,
             'random': generate_random_element,
+            'sc': ShadedCircle.generate,
+            'shaded-circle': ShadedCircle.generate,
+            't': Triangle.generate,
             'triangle': Triangle.generate,
         }
         return factories[name]
