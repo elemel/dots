@@ -12,12 +12,12 @@ from dots.io import load, save
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
 class DotsWindow(pyglet.window.Window):
-    def __init__(self, goal_image_path):
-        caption = 'Dots: %s' % os.path.split(goal_image_path)[1]
+    def __init__(self, config):
+        self.goal_image_path = config['goal']
+        caption = 'Dots: %s' % os.path.split(self.goal_image_path)[1]
         pyglet.window.Window.__init__(self, width=256, height=256,
                                       caption=caption)
-        self.goal_image_path = goal_image_path
-        self.goal_image = PIL.Image.open(goal_image_path).convert('RGB')
+        self.goal_image = PIL.Image.open(self.goal_image_path).convert('RGB')
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         circle_texture = self.load_circle_texture()
@@ -27,8 +27,9 @@ class DotsWindow(pyglet.window.Window):
         try:
             self.dots_image = load(self.dots_image_path)
         except Exception, e:
-            self.dots_image = DotsImage.generate(256, self.generate_element,
-                                                 random)
+            element_count = config.get('count', 256)
+            self.dots_image = DotsImage.generate(element_count,
+                                                 self.generate_element, random)
         self.screenshot = None
         self.fitness = None
         self.best_fitness = None
