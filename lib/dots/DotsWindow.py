@@ -14,6 +14,9 @@ dir_path = os.path.dirname(os.path.abspath(__file__))
 class DotsWindow(pyglet.window.Window):
     def __init__(self, config):
         self.goal_image_path = config['goal']
+        element_factory_name = config.get('element', 'random')
+        print element_factory_name
+        self.element_factory = self.get_element_factory(element_factory_name)
         caption = 'Dots: %s' % os.path.split(self.goal_image_path)[1]
         pyglet.window.Window.__init__(self, width=256, height=256,
                                       caption=caption)
@@ -29,7 +32,7 @@ class DotsWindow(pyglet.window.Window):
         except Exception, e:
             element_count = config.get('count', 256)
             self.dots_image = DotsImage.generate(element_count,
-                                                 self.generate_element, random)
+                                                 self.element_factory, random)
         self.screenshot = None
         self.fitness = None
         self.best_fitness = None
@@ -37,13 +40,21 @@ class DotsWindow(pyglet.window.Window):
         self.display_lists = {}
         pyglet.clock.schedule_interval_soft(self.step, 0.001)
 
+    def get_element_factory(self, name):
+        def generate_random_element(random):
+            factory = random.choice([Circle.generate, Triangle.generate])
+            return factory(random)
+        factories = {
+            'circle': Circle.generate,
+            'random': generate_random_element,
+            'triangle': Triangle.generate,
+        }
+        return factories[name]
+
     def load_circle_texture(self):
         circle_path = os.path.join(dir_path, 'circle.png')
         circle_image = pyglet.image.load(circle_path)
         return circle_image.get_texture()
-
-    def generate_element(self, random):
-        return random.choice([Circle.generate, Triangle.generate])(random)
 
     def step(self, dt):
         if self.screenshot is not None:
@@ -55,7 +66,7 @@ class DotsWindow(pyglet.window.Window):
                 self.best_fitness = self.fitness
                 print "Fitness: %.9f" % self.best_fitness
             self.update_display_lists()
-            self.dots_image = self.best_dots_image.mutate(self.generate_element,
+            self.dots_image = self.best_dots_image.mutate(self.element_factory,
                                                           random)
 
     def update_display_lists(self):

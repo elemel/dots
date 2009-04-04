@@ -10,9 +10,9 @@ def main():
     config = {}  
     config['goal'] = args[0]
     for opt, opt_arg in opts:
-        if opt in ['n', 'count']:
+        if opt in ['-n', '--count']:
             config['count'] = int(opt_arg)
-        if opt in ['e', 'element']:
+        if opt in ['-e', '--element']:
             config['element'] = opt_arg
     window = DotsWindow(config)
     pyglet.app.run()
