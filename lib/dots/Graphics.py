@@ -58,3 +58,13 @@ class Graphics(object):
         glEnd()
         glDisable(self.circle_texture.target)
         glPopMatrix()
+
+    def draw_shaded_triangle(self, chromosome):
+        glPushMatrix()
+        glBegin(GL_TRIANGLES)
+        for i in xrange(3):
+            x, y, r, g, b, a = chromosome[i * 6:(i + 1) * 6]
+            glColor4d(r, g, b, a / 2)
+            glVertex2d(x, y)
+        glEnd()
+        glPopMatrix()

@@ -8,6 +8,7 @@ from dots.Graphics import Graphics
 from dots.io import load, save
 from dots.shapes.Circle import Circle
 from dots.shapes.ShadedCircle import ShadedCircle
+from dots.shapes.ShadedTriangle import ShadedTriangle
 from dots.shapes.Triangle import Triangle
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -53,6 +54,8 @@ class DotsWindow(pyglet.window.Window):
             'random': generate_random_shape,
             't': Triangle.generate,
             'triangle': Triangle.generate,
+            'T': ShadedTriangle.generate,
+            'shaded-triangle': ShadedTriangle.generate,
         }
         return factories[name]
 
