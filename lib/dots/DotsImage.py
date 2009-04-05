@@ -1,28 +1,28 @@
 class DotsImage(object):
-    def __init__(self, elements):
-        self.elements = tuple(elements)
+    def __init__(self, shapes):
+        self.shapes = tuple(shapes)
 
     @staticmethod
     def generate(count, factory, random):
         return DotsImage(factory(random) for _ in xrange(count))
 
     def mutate(self, factory, random):
-        mutation = random.choice([self.move_or_replace_element,
-                                  self.mutate_element])
+        mutation = random.choice([self.move_or_replace_shape,
+                                  self.mutate_shape])
         return mutation(factory, random)
 
-    def move_or_replace_element(self, factory, random):
-        elements = list(self.elements)
-        i = random.randrange(len(elements))
-        j = random.randrange(len(elements))
-        element = elements.pop(i)
+    def move_or_replace_shape(self, factory, random):
+        shapes = list(self.shapes)
+        i = random.randrange(len(shapes))
+        j = random.randrange(len(shapes))
+        shape = shapes.pop(i)
         if random.randrange(2):
-            element = factory(random)
-        elements.insert(j, element)
-        return DotsImage(elements)
+            shape = factory(random)
+        shapes.insert(j, shape)
+        return DotsImage(shapes)
 
-    def mutate_element(self, factory, random):
-        elements = list(self.elements)
-        i = random.randrange(len(elements))
-        elements[i] = elements[i].mutate(random)
-        return DotsImage(elements)
+    def mutate_shape(self, factory, random):
+        shapes = list(self.shapes)
+        i = random.randrange(len(shapes))
+        shapes[i] = shapes[i].mutate(random)
+        return DotsImage(shapes)

@@ -15,8 +15,8 @@ dir_path = os.path.dirname(os.path.abspath(__file__))
 class DotsWindow(pyglet.window.Window):
     def __init__(self, config):
         self.goal_image_path = config['goal']
-        element_factory_name = config.get('element', 'random')
-        self.element_factory = self.get_element_factory(element_factory_name)
+        shape_factory_name = config.get('shape', 'random')
+        self.shape_factory = self.get_shape_factory(shape_factory_name)
         caption = 'Dots: %s' % os.path.split(self.goal_image_path)[1]
         pyglet.window.Window.__init__(self, width=256, height=256,
                                       caption=caption)
@@ -30,9 +30,9 @@ class DotsWindow(pyglet.window.Window):
         try:
             self.dots_image = load(self.dots_image_path)
         except Exception, e:
-            element_count = config.get('count', 256)
-            self.dots_image = DotsImage.generate(element_count,
-                                                 self.element_factory, random)
+            shape_count = config.get('count', 256)
+            self.dots_image = DotsImage.generate(shape_count,
+                                                 self.shape_factory, random)
         self.screenshot = None
         self.fitness = None
         self.best_fitness = None
@@ -40,8 +40,8 @@ class DotsWindow(pyglet.window.Window):
         self.display_lists = {}
         pyglet.clock.schedule_interval_soft(self.step, 0.001)
 
-    def get_element_factory(self, name):
-        def generate_random_element(random):
+    def get_shape_factory(self, name):
+        def generate_random_shape(random):
             factory = random.choice([Circle.generate, Triangle.generate])
             return factory(random)
         factories = {
@@ -49,8 +49,8 @@ class DotsWindow(pyglet.window.Window):
             'circle': Circle.generate,
             'C': ShadedCircle.generate,
             'shaded-circle': ShadedCircle.generate,
-            'r': generate_random_element,
-            'random': generate_random_element,
+            'r': generate_random_shape,
+            'random': generate_random_shape,
             't': Triangle.generate,
             'triangle': Triangle.generate,
         }
@@ -71,26 +71,26 @@ class DotsWindow(pyglet.window.Window):
                 self.best_fitness = self.fitness
                 print "Fitness: %.9f" % self.best_fitness
             self.update_display_lists()
-            self.dots_image = self.best_dots_image.mutate(self.element_factory,
+            self.dots_image = self.best_dots_image.mutate(self.shape_factory,
                                                           random)
 
     def update_display_lists(self):
-        diff = set(self.display_lists).difference(self.best_dots_image.elements)
-        for element in diff:
-            glDeleteLists(self.display_lists.pop(element), 1)
+        diff = set(self.display_lists).difference(self.best_dots_image.shapes)
+        for shape in diff:
+            glDeleteLists(self.display_lists.pop(shape), 1)
 
     def on_draw(self):
         glClearColor(0, 0, 0, 0)
         self.clear()
         glLoadIdentity()
         glScaled(self.width, self.height, 1)
-        for element in self.dots_image.elements:
-            if element in self.display_lists:
-                glCallList(self.display_lists[element])
+        for shape in self.dots_image.shapes:
+            if shape in self.display_lists:
+                glCallList(self.display_lists[shape])
             else:
-                self.display_lists[element] = glGenLists(1)
-                glNewList(self.display_lists[element], GL_COMPILE_AND_EXECUTE)
-                element.draw(self.graphics)
+                self.display_lists[shape] = glGenLists(1)
+                glNewList(self.display_lists[shape], GL_COMPILE_AND_EXECUTE)
+                shape.draw(self.graphics)
                 glEndList()
         self.screenshot = self.get_screenshot()
 
