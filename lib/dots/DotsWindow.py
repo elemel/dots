@@ -9,6 +9,7 @@ from dots.io import load, save
 from dots.shapes.Circle import Circle
 from dots.shapes.ShadedCircle import ShadedCircle
 from dots.shapes.ShadedTriangle import ShadedTriangle
+from dots.shapes.ShadedTriangleFan import ShadedTriangleFan
 from dots.shapes.Triangle import Triangle
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -50,6 +51,8 @@ class DotsWindow(pyglet.window.Window):
             'circle': Circle.generate,
             'C': ShadedCircle.generate,
             'shaded-circle': ShadedCircle.generate,
+            'F': ShadedTriangleFan.generate,
+            'shaded-triangle-fan': ShadedTriangleFan.generate,
             'r': generate_random_shape,
             'random': generate_random_shape,
             't': Triangle.generate,

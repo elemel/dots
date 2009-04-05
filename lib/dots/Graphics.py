@@ -68,3 +68,21 @@ class Graphics(object):
             glVertex2d(x, y)
         glEnd()
         glPopMatrix()
+
+    def draw_shaded_triangle_fan(self, chromosome):
+        n = len(chromosome)
+        xs = chromosome[4:n:6]
+        ys = chromosome[5:n:6]
+        glPushMatrix()
+        glBegin(GL_TRIANGLE_FAN)
+        glColor4d(*chromosome[:4])
+        glVertex2d(sum(xs) / len(xs), sum(ys) / len(ys))
+        for i in xrange((n - 4) // 6):
+            x, y, r, g, b, a = chromosome[4 + i * 6:10 + i * 6]
+            glColor4d(r, g, b, a)
+            glVertex2d(x, y)
+        x, y, r, g, b, a = chromosome[4:10]
+        glColor4d(r, g, b, a)
+        glVertex2d(x, y)
+        glEnd()
+        glPopMatrix()
