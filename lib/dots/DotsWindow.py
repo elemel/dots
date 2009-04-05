@@ -47,10 +47,10 @@ class DotsWindow(pyglet.window.Window):
         factories = {
             'c': Circle.generate,
             'circle': Circle.generate,
-            'x': generate_random_element,
-            'random': generate_random_element,
-            'sc': ShadedCircle.generate,
+            'C': ShadedCircle.generate,
             'shaded-circle': ShadedCircle.generate,
+            'r': generate_random_element,
+            'random': generate_random_element,
             't': Triangle.generate,
             'triangle': Triangle.generate,
         }
