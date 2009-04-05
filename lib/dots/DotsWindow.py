@@ -80,9 +80,8 @@ class DotsWindow(pyglet.window.Window):
             glDeleteLists(self.display_lists.pop(shape), 1)
 
     def on_draw(self):
-        glClearColor(0, 0, 0, 0)
         self.clear()
-        glLoadIdentity()
+        glPushMatrix()
         glScaled(self.width, self.height, 1)
         for shape in self.dots_image.shapes:
             if shape in self.display_lists:
@@ -92,6 +91,7 @@ class DotsWindow(pyglet.window.Window):
                 glNewList(self.display_lists[shape], GL_COMPILE_AND_EXECUTE)
                 shape.draw(self.graphics)
                 glEndList()
+        glPopMatrix()
         self.screenshot = self.get_screenshot()
 
     def on_close(self):
