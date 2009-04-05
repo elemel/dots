@@ -3,12 +3,12 @@ from __future__ import division
 import os, pyglet, random, sys
 import PIL.Image, PIL.ImageChops, PIL.ImageStat
 from pyglet.gl import *
-from dots.Circle import Circle
 from dots.DotsImage import DotsImage
 from dots.Graphics import Graphics
-from dots.ShadedCircle import ShadedCircle
-from dots.Triangle import Triangle
 from dots.io import load, save
+from dots.shapes.Circle import Circle
+from dots.shapes.ShadedCircle import ShadedCircle
+from dots.shapes.Triangle import Triangle
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
