@@ -32,7 +32,7 @@ class DotsWindow(pyglet.window.Window):
         try:
             self.dots_image = load(self.dots_image_path)
         except Exception, e:
-            shape_count = config.get('count', 256)
+            shape_count = config.get('count', 100)
             self.dots_image = DotsImage.generate(shape_count,
                                                  self.shape_factory, random)
         self.screenshot = None
