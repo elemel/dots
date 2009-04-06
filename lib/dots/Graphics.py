@@ -70,19 +70,19 @@ class Graphics(object):
         glPopMatrix()
 
     def draw_shaded_triangle_fan(self, chromosome):
-        n = len(chromosome)
-        xs = chromosome[4:n:6]
-        ys = chromosome[5:n:6]
+        r, g, b, a = chromosome[:4]
+        xs = chromosome[4:len(chromosome):3]
+        ys = chromosome[5:len(chromosome):3]
         glPushMatrix()
         glBegin(GL_TRIANGLE_FAN)
-        glColor4d(*chromosome[:4])
+        glColor4d(r, g, b, a / 2)
         glVertex2d(sum(xs) / len(xs), sum(ys) / len(ys))
-        for i in xrange((n - 4) // 6):
-            x, y, r, g, b, a = chromosome[4 + i * 6:10 + i * 6]
-            glColor4d(r, g, b, a)
+        for i in xrange((len(chromosome) - 4) // 3):
+            x, y, a = chromosome[4 + i * 3:7 + i * 3]
+            glColor4d(r, g, b, a / 2)
             glVertex2d(x, y)
-        x, y, r, g, b, a = chromosome[4:10]
-        glColor4d(r, g, b, a)
+        x, y, a = chromosome[4:7]
+        glColor4d(r, g, b, a / 2)
         glVertex2d(x, y)
         glEnd()
         glPopMatrix()

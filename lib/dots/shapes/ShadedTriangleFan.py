@@ -1,45 +1,39 @@
 from __future__ import division
 
-import math
+from itertools import chain
+from math import atan2, cos, pi, sin
 
 class ShadedTriangleFan(object):
     # chromosome = CV{7}
     # C = rgba
-    # V = xyrgba
+    # V = xya
 
     def __init__(self, chromosome):
-        center_color = chromosome[:4]
-        xs = chromosome[4:len(chromosome):6]
-        ys = chromosome[5:len(chromosome):6]
+        xs = chromosome[4:len(chromosome):3]
+        ys = chromosome[5:len(chromosome):3]
         center_x, center_y = sum(xs) / len(xs), sum(ys) / len(ys)
-        vertex_count = (len(chromosome) - 4) // 6
-        vertices = [chromosome[4 + i * 6:10 + i * 6]
+        vertex_count = (len(chromosome) - 4) // 3
+        vertices = [chromosome[4 + i * 3:7 + i * 3]
                     for i in xrange(vertex_count)]
         def angle(vertex):
-            x, y, r, g, b, a = vertex
-            return math.atan2(y - center_y, x - center_x)
-        vertices.sort(key=angle)
-        chromosome = []
-        chromosome.extend(center_color)
-        for vertex in vertices:
-            chromosome.extend(vertex)
+            x, y, a = vertex
+            return atan2(y - center_y, x - center_x)
+        chromosome = chromosome[:4]
+        chromosome.extend(chain(*sorted(vertices, key=angle)))
         self.chromosome = tuple(chromosome)
 
     @staticmethod
     def generate(random):
-        center_x, center_y = random.random(), random.random()
+        x, y = random.random(), random.random()
+        color = [random.random() for _ in xrange(4)]
         radius = 0.1 * random.random()
-        center_color = [random.random() for _ in xrange(4)]
-        center_color[3] /= 2
-        vertex_color = list(center_color)
-        vertex_color[3] /= 2
         chromosome = []
-        chromosome.extend(center_color)
+        chromosome.extend(color)
         for _ in xrange(7):
-            angle = 2 * math.pi * random.random()
-            chromosome.append(center_x + radius * math.cos(angle))
-            chromosome.append(center_y + radius * math.sin(angle))
-            chromosome.extend(vertex_color)
+            angle = 2 * pi * random.random()
+            chromosome.append(x + radius * cos(angle))
+            chromosome.append(y + radius * sin(angle))
+            chromosome.append(0)
         return ShadedTriangleFan(chromosome)
 
     def mutate(self, random):
