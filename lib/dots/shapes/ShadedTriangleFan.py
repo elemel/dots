@@ -2,6 +2,9 @@ from __future__ import division
 
 from itertools import chain
 from math import atan2, cos, pi, sin
+from pyglet.gl import *
+
+__all__ = 'ShadedTriangleFan'
 
 class ShadedTriangleFan(object):
     # chromosome = CV{7}
@@ -44,4 +47,17 @@ class ShadedTriangleFan(object):
         return ShadedTriangleFan(chromosome)
 
     def draw(self, graphics):
-        graphics.draw_shaded_triangle_fan(self.chromosome)
+        r, g, b, a = self.chromosome[:4]
+        xs = self.chromosome[4:len(self.chromosome):3]
+        ys = self.chromosome[5:len(self.chromosome):3]
+        glBegin(GL_TRIANGLE_FAN)
+        glColor4d(r, g, b, a / 2)
+        glVertex2d(sum(xs) / len(xs), sum(ys) / len(ys))
+        for i in xrange((len(self.chromosome) - 4) // 3):
+            x, y, a = self.chromosome[4 + i * 3:7 + i * 3]
+            glColor4d(r, g, b, a / 2)
+            glVertex2d(x, y)
+        x, y, a = self.chromosome[4:7]
+        glColor4d(r, g, b, a / 2)
+        glVertex2d(x, y)
+        glEnd()
