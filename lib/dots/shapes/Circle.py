@@ -1,10 +1,6 @@
 from pyglet.gl import *
+from dots.shapes.Gene import Gene
 from dots.shapes.Shape import Shape
-
-def Gene(index):
-    def get(self):
-        return self.chromosome[index]
-    return property(get)
 
 class Circle(Shape):
     chromosome_len = 7

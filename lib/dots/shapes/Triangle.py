@@ -1,38 +1,39 @@
 import math
+from pyglet.gl import *
+from dots.shapes.Gene import Gene
+from dots.shapes.Shape import Shape
 
-class Triangle(object):
-    def __init__(self, x1, y1, x2, y2, x3, y3, red, green, blue, alpha):
-        self.x1 = x1
-        self.y1 = y1
-        self.x2 = x2
-        self.y2 = y2
-        self.x3 = x3
-        self.y3 = y3
-        self.red = red
-        self.green = green
-        self.blue = blue
-        self.alpha = alpha
+class Triangle(Shape):
+    chromosome_len = 10
 
-    @staticmethod
-    def generate(random):
-        x, y = random.random(), random.random()
-        radius = random.random() ** 3
-        a1, a2, a3 = [2 * math.pi * random.random() for _ in xrange(3)]
-        x1, y1 = x + radius * math.cos(a1), y + radius * math.sin(a1)
-        x2, y2 = x + radius * math.cos(a2), y + radius * math.sin(a2)
-        x3, y3 = x + radius * math.cos(a3), y + radius * math.sin(a3)
-        red, green, blue, alpha = [random.random() for _ in xrange(4)]
-        return Triangle(x1, y1, x2, y2, x3, y3, red, green, blue, alpha)
+    x1 = Gene(0)
+    y1 = Gene(1)
+    x2 = Gene(2)
+    y2 = Gene(3)
+    x3 = Gene(4)
+    y3 = Gene(5)
+    red = Gene(6)
+    green = Gene(7)
+    blue = Gene(8)
+    alpha = Gene(9)
 
-    def mutate(self, random):
-        values = [self.x1, self.y1, self.x2, self.y2, self.x3, self.y3,
-                  self.red, self.green, self.blue, self.alpha]
-        i = random.randrange(len(values))
-        values[i] += random.choice([-1, 1]) * random.random() ** 3
-        values[i] = max(0, min(values[i], 1))
-        return Triangle(*values)
+    @classmethod
+    def generate(cls, random):
+        center = random.random(), random.random()
+        scale = random.random() * random.choice([0.01, 0.1, 1])
+        chromosome = []
+        for _ in xrange(3):
+            vertex = [x + random.choice([-1, 1]) * scale * random.random()
+                      for x in center]
+            chromosome.extend(vertex)
+        color = [random.random() for _ in xrange(4)]
+        chromosome.extend(color)
+        return cls(chromosome)
 
     def draw(self, graphics):
-        graphics.draw_triangle(self.x1, self.y1, self.x2, self.y2,
-                               self.x3, self.y3,
-                               self.red, self.green, self.blue, self.alpha)
+        glColor4d(self.red, self.green, self.blue, self.alpha / 2)
+        glBegin(GL_TRIANGLES)
+        glVertex2d(self.x1, self.y1)
+        glVertex2d(self.x2, self.y2)
+        glVertex2d(self.x3, self.y3)
+        glEnd()
