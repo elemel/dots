@@ -1,36 +1,21 @@
 from pyglet.gl import *
 from dots.shapes.Shape import Shape
 
+def Gene(index):
+    def get(self):
+        return self.chromosome[index]
+    return property(get)
+
 class Circle(Shape):
     chromosome_len = 7
 
-    @property
-    def x(self):
-        return self.chromosome[0]
-
-    @property
-    def y(self):
-        return self.chromosome[1]
-
-    @property
-    def radius(self):
-        return self.chromosome[2]
-
-    @property
-    def red(self):
-        return self.chromosome[3]
-
-    @property
-    def green(self):
-        return self.chromosome[4]
-
-    @property
-    def blue(self):
-        return self.chromosome[5]
-
-    @property
-    def alpha(self):
-        return self.chromosome[6]
+    x = Gene(0)
+    y = Gene(1)
+    radius = Gene(2)
+    red = Gene(3)
+    green = Gene(4)
+    blue = Gene(5)
+    alpha = Gene(6)
 
     @classmethod
     def generate(cls, random):
