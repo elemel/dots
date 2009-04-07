@@ -1,28 +1,35 @@
 class ShadedCircle(object):
-    def __init__(self, center, radius, colors):
+    def __init__(self, center, radius, color, alphas):
         self.center = tuple(center)
         self.radius = radius
-        self.colors = tuple(tuple(color) for color in colors)
+        self.color = tuple(color)
+        self.alphas = tuple(alphas)
+
+    @staticmethod
+    def decode(chromosome):
+        center = chromosome[:2]
+        radius = chromosome[2]
+        color = chromosome[3:6]
+        alphas = chromosome[6:]
+        return ShadedCircle(center, radius, color, alphas)
+
+    def encode(self):
+        return self.center + (self.radius,) + self.color + self.alphas
 
     @staticmethod
     def generate(random):
-        center = random.random(), random.random()
-        radius = random.random() ** 3
-        color = tuple(random.random() for _ in xrange(4))
-        colors = tuple(color for _ in xrange(4))
-        return ShadedCircle(center, radius, colors)
+        chromosome = [random.random() for _ in xrange(10)]
+        chromosome[2] *= random.choice([0.001, 0.01, 0.1, 1])
+        return ShadedCircle.decode(chromosome)
 
     def mutate(self, random):
-        values = list(self.center) + [self.radius]
-        for color in self.colors:
-            values.extend(color)
-        i = random.randrange(len(values))
-        values[i] += random.choice([-1, 1]) * random.random() ** 3
-        values[i] = max(0, min(values[i], 1))
-        center = values[:2]
-        radius = values[2]
-        colors = values[3:7], values[7:11], values[11:15], values[15:19]
-        return ShadedCircle(center, radius, colors)
+        chromosome = list(self.encode())
+        i = random.randrange(len(chromosome))
+        sigma = random.choice([0.001, 0.01, 0.1, 1])
+        chromosome[i] = random.normalvariate(chromosome[i], sigma)
+        chromosome[i] = max(0, min(chromosome[i], 1))
+        return ShadedCircle.decode(chromosome)
 
     def draw(self, graphics):
-        graphics.draw_shaded_circle(self.center, self.radius, self.colors)
+        graphics.draw_shaded_circle(self.center, self.radius, self.color,
+                                    self.alphas)

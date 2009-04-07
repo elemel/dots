@@ -17,7 +17,7 @@ dir_path = os.path.dirname(os.path.abspath(__file__))
 class DotsWindow(pyglet.window.Window):
     def __init__(self, config):
         self.goal_image_path = config['goal']
-        shape_factory_name = config.get('shape', 'random')
+        shape_factory_name = config.get('shape', 'circle')
         self.shape_factory = self.get_shape_factory(shape_factory_name)
         caption = 'Dots: %s' % os.path.split(self.goal_image_path)[1]
         pyglet.window.Window.__init__(self, width=256, height=256,
@@ -32,7 +32,7 @@ class DotsWindow(pyglet.window.Window):
         try:
             self.dots_image = load(self.dots_image_path)
         except Exception, e:
-            shape_count = config.get('count', 100)
+            shape_count = config.get('count', 256)
             self.dots_image = DotsImage.generate(shape_count,
                                                  self.shape_factory, random)
         self.screenshot = None
@@ -47,18 +47,12 @@ class DotsWindow(pyglet.window.Window):
             factory = random.choice([Circle.generate, Triangle.generate])
             return factory(random)
         factories = {
-            'c': Circle.generate,
             'circle': Circle.generate,
-            'C': ShadedCircle.generate,
-            'shaded-circle': ShadedCircle.generate,
-            'F': ShadedTriangleFan.generate,
-            'shaded-triangle-fan': ShadedTriangleFan.generate,
-            'r': generate_random_shape,
             'random': generate_random_shape,
-            't': Triangle.generate,
-            'triangle': Triangle.generate,
-            'T': ShadedTriangle.generate,
+            'shaded-circle': ShadedCircle.generate,
             'shaded-triangle': ShadedTriangle.generate,
+            'shaded-triangle-fan': ShadedTriangleFan.generate,
+            'triangle': Triangle.generate,
         }
         return factories[name]
 
