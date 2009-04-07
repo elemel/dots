@@ -18,6 +18,8 @@ class DotsImage(object):
         shape = shapes.pop(i)
         if random.randrange(2):
             shape = factory(random)
+            if random.randrange(2):
+                j = len(shapes)
         shapes.insert(j, shape)
         return DotsImage(shapes)
 
