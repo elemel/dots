@@ -1,5 +1,4 @@
 import math
-from pyglet.gl import *
 from dots.shapes.Gene import Gene
 from dots.shapes.Shape import Shape
 
@@ -30,10 +29,10 @@ class Triangle(Shape):
         chromosome.extend(color)
         return cls(chromosome)
 
-    def draw(self, graphics):
-        glColor4d(self.red, self.green, self.blue, self.alpha / 2)
-        glBegin(GL_TRIANGLES)
-        glVertex2d(self.x1, self.y1)
-        glVertex2d(self.x2, self.y2)
-        glVertex2d(self.x3, self.y3)
-        glEnd()
+    def draw(self, gl, textures):
+        gl.glColor4d(self.red, self.green, self.blue, self.alpha / 2)
+        gl.glBegin(gl.GL_TRIANGLES)
+        gl.glVertex2d(self.x1, self.y1)
+        gl.glVertex2d(self.x2, self.y2)
+        gl.glVertex2d(self.x3, self.y3)
+        gl.glEnd()

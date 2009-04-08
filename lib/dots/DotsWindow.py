@@ -4,12 +4,8 @@ import os, pyglet, random, sys
 import PIL.Image, PIL.ImageChops, PIL.ImageStat
 from pyglet.gl import *
 from dots.DotsImage import DotsImage
-from dots.Graphics import Graphics
 from dots.io import load, save
 from dots.shapes.Circle import Circle
-from dots.shapes.ShadedCircle import ShadedCircle
-from dots.shapes.ShadedTriangle import ShadedTriangle
-from dots.shapes.ShadedTriangleFan import ShadedTriangleFan
 from dots.shapes.Triangle import Triangle
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -25,8 +21,7 @@ class DotsWindow(pyglet.window.Window):
         self.goal_image = PIL.Image.open(self.goal_image_path).convert('RGB')
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        circle_texture = self.load_circle_texture()
-        self.graphics = Graphics(circle_texture)
+        self.textures = self.load_textures()
         self.dots_image_path = ('%s.dots' %
                                 os.path.splitext(self.goal_image_path)[0])
         try:
@@ -49,17 +44,15 @@ class DotsWindow(pyglet.window.Window):
         factories = {
             'circle': Circle.generate,
             'random': generate_random_shape,
-            'shaded-circle': ShadedCircle.generate,
-            'shaded-triangle': ShadedTriangle.generate,
-            'shaded-triangle-fan': ShadedTriangleFan.generate,
             'triangle': Triangle.generate,
         }
         return factories[name]
 
-    def load_circle_texture(self):
+    def load_textures(self):
         circle_path = os.path.join(dir_path, 'circle.png')
         circle_image = pyglet.image.load(circle_path)
-        return circle_image.get_texture()
+        circle_texture = circle_image.get_texture()
+        return dict(circle = circle_texture)
 
     def step(self, dt):
         if self.screenshot is not None:
@@ -89,7 +82,7 @@ class DotsWindow(pyglet.window.Window):
             else:
                 self.display_lists[shape] = glGenLists(1)
                 glNewList(self.display_lists[shape], GL_COMPILE_AND_EXECUTE)
-                shape.draw(self.graphics)
+                shape.draw(pyglet.gl, self.textures)
                 glEndList()
         glPopMatrix()
         self.screenshot = self.get_screenshot()
